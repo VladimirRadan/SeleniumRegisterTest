@@ -3,10 +3,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
+import util.Utils;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 
@@ -15,6 +20,7 @@ public class BaseTest {
 
     protected WebDriver driver;
     protected Actions actions;
+    protected WebDriverWait wait;
 
     @BeforeTest
     public void driverSetup(){
@@ -25,13 +31,11 @@ public class BaseTest {
     @BeforeMethod
     public void setUpDriver(){
         driver = new ChromeDriver();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         actions = new Actions(driver);
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Utils.waitForSeconds(3);
         driver.manage().window().maximize();
+        //driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         //driver.get("https://magento.softwaretestingboard.com/");
         //driver.get("https://demowebshop.tricentis.com/");
     }
@@ -44,7 +48,8 @@ public class BaseTest {
 
 
     protected WebElement getElement(By locator){
-        return driver.findElement(locator);
+        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        //return driver.findElement(locator);
     }
 
     protected void typeIn(By locator, String text){
